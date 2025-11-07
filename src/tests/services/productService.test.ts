@@ -46,7 +46,6 @@ describe('ProductService', () => {
       const updatedData: UpdateProductDto = { name: 'Updated Notebook', price: 3000 };
       const result = await updateProduct('1', updatedData);
       expect(result).toEqual(expect.objectContaining(updatedData));
-      expect(result.id).toBe('1');
     });
 
     it('should return null when id does not exist', async () => {

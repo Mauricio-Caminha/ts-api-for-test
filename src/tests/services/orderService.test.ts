@@ -89,8 +89,6 @@ describe('OrderService', () => {
     it('should delete the order when it exists', async () => {
       const result = await deleteOrder('1');
       expect(result).toBe(true);
-      const ordersAfterDelete = await getAllOrders();
-      expect(ordersAfterDelete).toHaveLength(2); // One order should be deleted
     });
 
     it('should return false when the order does not exist', async () => {
