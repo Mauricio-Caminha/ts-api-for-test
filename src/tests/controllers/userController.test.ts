@@ -22,7 +22,7 @@ describe('UserController', () => {
 
   describe('getAllUsers', () => {
     it('should return all users', async () => {
-      const mockUsers = [{ id: '1', name: 'John Doe' }];
+      const mockUsers = [{ id: '1', name: 'John Doe', email: 'john@example.com', age: 30 }];
       vi.mocked(userService.getAllUsers).mockResolvedValue(mockUsers);
 
       await getAllUsers(mockReq as Request, mockRes as Response, mockNext);
@@ -43,7 +43,7 @@ describe('UserController', () => {
 
   describe('getUserById', () => {
     it('should return user when id exists', async () => {
-      const mockUser = { id: '1', name: 'John Doe' };
+      const mockUser = { id: '1', name: 'John Doe', email: 'john@example.com', age: 30 };
       mockReq.params = { id: '1' };
       vi.mocked(userService.getUserById).mockResolvedValue(mockUser);
 
@@ -55,7 +55,7 @@ describe('UserController', () => {
 
     it('should return 404 when user not found', async () => {
       mockReq.params = { id: '999' };
-      vi.mocked(userService.getUserById).mockResolvedValue(null);
+      vi.mocked(userService.getUserById).mockResolvedValue(undefined);
 
       await getUserById(mockReq as Request, mockRes as Response, mockNext);
 
@@ -78,7 +78,7 @@ describe('UserController', () => {
     it('should create and return a new user', async () => {
       const userData = { name: 'Jane Doe' };
       mockReq.body = userData;
-      const mockNewUser = { id: '2', ...userData };
+      const mockNewUser = { id: '2', name: 'Jane Doe', email: 'jane@example.com', age: 28 };
       vi.mocked(userService.createUser).mockResolvedValue(mockNewUser);
 
       await createUser(mockReq as Request, mockRes as Response, mockNext);
@@ -103,7 +103,7 @@ describe('UserController', () => {
       const userData = { name: 'John Smith' };
       mockReq.params = { id: '1' };
       mockReq.body = userData;
-      const mockUpdatedUser = { id: '1', ...userData };
+      const mockUpdatedUser = { id: '1', ...userData, email: 'john@example.com', age: 30 };
       vi.mocked(userService.updateUser).mockResolvedValue(mockUpdatedUser);
 
       await updateUser(mockReq as Request, mockRes as Response, mockNext);

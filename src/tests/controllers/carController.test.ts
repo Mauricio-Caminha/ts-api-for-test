@@ -25,7 +25,10 @@ describe('CarController', () => {
 
   describe('getAllCars', () => {
     it('should return all cars', async () => {
-      const mockCars = [{ id: '1', model: 'Car A' }, { id: '2', model: 'Car B' }];
+      const mockCars = [
+        { id: '1', brand: 'Toyota', model: 'Car A', year: 2020, color: 'White', price: 85000 },
+        { id: '2', brand: 'Honda', model: 'Car B', year: 2021, color: 'Black', price: 92000 }
+      ];
       vi.mocked(carService.getAllCars).mockResolvedValue(mockCars);
 
       await getAllCars(mockReq as Request, mockRes as Response, mockNext);
@@ -46,8 +49,8 @@ describe('CarController', () => {
 
   describe('getCarById', () => {
     it('should return car by id', async () => {
-      mockReq.params.id = '1';
-      const mockCar = { id: '1', model: 'Car A' };
+      mockReq.params = { id: '1' };
+      const mockCar = { id: '1', brand: 'Toyota', model: 'Car A', year: 2020, color: 'White', price: 85000 };
       vi.mocked(carService.getCarById).mockResolvedValue(mockCar);
 
       await getCarById(mockReq as Request, mockRes as Response, mockNext);
@@ -57,8 +60,8 @@ describe('CarController', () => {
     });
 
     it('should return 404 if car not found', async () => {
-      mockReq.params.id = '999';
-      vi.mocked(carService.getCarById).mockResolvedValue(null);
+      mockReq.params = { id: '999' };
+      vi.mocked(carService.getCarById).mockResolvedValue(undefined);
 
       await getCarById(mockReq as Request, mockRes as Response, mockNext);
 
@@ -67,7 +70,7 @@ describe('CarController', () => {
     });
 
     it('should call next with error on failure', async () => {
-      mockReq.params.id = '1';
+      mockReq.params = { id: '1' };
       const mockError = new Error('Service error');
       vi.mocked(carService.getCarById).mockRejectedValue(mockError);
 
@@ -79,7 +82,7 @@ describe('CarController', () => {
 
   describe('createCar', () => {
     it('should create a new car', async () => {
-      const mockCarData = { model: 'Car A' };
+      const mockCarData = { brand: 'Toyota', model: 'Car A', year: 2020, color: 'White', price: 85000 };
       const mockNewCar = { id: '1', ...mockCarData };
       mockReq.body = mockCarData;
       vi.mocked(carService.createCar).mockResolvedValue(mockNewCar);
@@ -92,7 +95,7 @@ describe('CarController', () => {
 
     it('should call next with error on failure', async () => {
       const mockError = new Error('Service error');
-      mockReq.body = { model: 'Car A' };
+      mockReq.body = { brand: 'Toyota', model: 'Car A', year: 2020, color: 'White', price: 85000 };
       vi.mocked(carService.createCar).mockRejectedValue(mockError);
 
       await createCar(mockReq as Request, mockRes as Response, mockNext);
@@ -103,9 +106,9 @@ describe('CarController', () => {
 
   describe('updateCar', () => {
     it('should update a car by id', async () => {
-      mockReq.params.id = '1';
+      mockReq.params = { id: '1' };
       const mockCarData = { model: 'Updated Car A' };
-      const mockUpdatedCar = { id: '1', ...mockCarData };
+      const mockUpdatedCar = { id: '1', brand: 'Toyota', model: 'Updated Car A', year: 2020, color: 'White', price: 85000 };
       mockReq.body = mockCarData;
       vi.mocked(carService.updateCar).mockResolvedValue(mockUpdatedCar);
 
@@ -116,7 +119,7 @@ describe('CarController', () => {
     });
 
     it('should return 404 if car not found', async () => {
-      mockReq.params.id = '999';
+      mockReq.params = { id: '999' };
       mockReq.body = { model: 'Updated Car A' };
       vi.mocked(carService.updateCar).mockResolvedValue(null);
 
@@ -127,7 +130,7 @@ describe('CarController', () => {
     });
 
     it('should call next with error on failure', async () => {
-      mockReq.params.id = '1';
+      mockReq.params = { id: '1' };
       const mockError = new Error('Service error');
       mockReq.body = { model: 'Updated Car A' };
       vi.mocked(carService.updateCar).mockRejectedValue(mockError);
@@ -140,7 +143,7 @@ describe('CarController', () => {
 
   describe('deleteCar', () => {
     it('should delete a car by id', async () => {
-      mockReq.params.id = '1';
+      mockReq.params = { id: '1' };
       vi.mocked(carService.deleteCar).mockResolvedValue(true);
 
       await deleteCar(mockReq as Request, mockRes as Response, mockNext);
@@ -150,7 +153,7 @@ describe('CarController', () => {
     });
 
     it('should return 404 if car not found', async () => {
-      mockReq.params.id = '999';
+      mockReq.params = { id: '999' };
       vi.mocked(carService.deleteCar).mockResolvedValue(false);
 
       await deleteCar(mockReq as Request, mockRes as Response, mockNext);
@@ -160,7 +163,7 @@ describe('CarController', () => {
     });
 
     it('should call next with error on failure', async () => {
-      mockReq.params.id = '1';
+      mockReq.params = { id: '1' };
       const mockError = new Error('Service error');
       vi.mocked(carService.deleteCar).mockRejectedValue(mockError);
 

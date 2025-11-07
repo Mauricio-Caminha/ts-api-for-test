@@ -25,7 +25,7 @@ describe('ProductController', () => {
 
   describe('getAllProducts', () => {
     it('should return all products', async () => {
-      const mockProducts = [{ id: '1', name: 'Product 1' }];
+      const mockProducts = [{ id: '1', name: 'Product 1', description: 'Description', price: 100, stock: 10, category: 'Category' }];
       vi.mocked(productService.getAllProducts).mockResolvedValue(mockProducts);
 
       await getAllProducts(mockReq as Request, mockRes as Response, mockNext);
@@ -46,8 +46,8 @@ describe('ProductController', () => {
 
   describe('getProductById', () => {
     it('should return product when id exists', async () => {
-      mockReq.params.id = '1';
-      const mockProduct = { id: '1', name: 'Product 1' };
+      mockReq.params = { id: '1' };
+      const mockProduct = { id: '1', name: 'Product 1', description: 'Description', price: 100, stock: 10, category: 'Category' };
       vi.mocked(productService.getProductById).mockResolvedValue(mockProduct);
 
       await getProductById(mockReq as Request, mockRes as Response, mockNext);
@@ -57,8 +57,8 @@ describe('ProductController', () => {
     });
 
     it('should return 404 when product not found', async () => {
-      mockReq.params.id = '999';
-      vi.mocked(productService.getProductById).mockResolvedValue(null);
+      mockReq.params = { id: '999' };
+      vi.mocked(productService.getProductById).mockResolvedValue(undefined);
 
       await getProductById(mockReq as Request, mockRes as Response, mockNext);
 
@@ -67,7 +67,7 @@ describe('ProductController', () => {
     });
 
     it('should call next with error on failure', async () => {
-      mockReq.params.id = '1';
+      mockReq.params = { id: '1' };
       const mockError = new Error('Service error');
       vi.mocked(productService.getProductById).mockRejectedValue(mockError);
 
@@ -79,7 +79,7 @@ describe('ProductController', () => {
 
   describe('createProduct', () => {
     it('should create a new product', async () => {
-      const mockProductData = { name: 'New Product' };
+      const mockProductData = { name: 'New Product', description: 'Description', price: 100, stock: 10, category: 'Category' };
       const mockNewProduct = { id: '2', ...mockProductData };
       mockReq.body = mockProductData;
       vi.mocked(productService.createProduct).mockResolvedValue(mockNewProduct);
@@ -92,7 +92,7 @@ describe('ProductController', () => {
 
     it('should call next with error on failure', async () => {
       const mockError = new Error('Service error');
-      mockReq.body = { name: 'New Product' };
+      mockReq.body = { name: 'New Product', description: 'Description', price: 100, stock: 10, category: 'Category' };
       vi.mocked(productService.createProduct).mockRejectedValue(mockError);
 
       await createProduct(mockReq as Request, mockRes as Response, mockNext);
@@ -103,9 +103,9 @@ describe('ProductController', () => {
 
   describe('updateProduct', () => {
     it('should update product when id exists', async () => {
-      mockReq.params.id = '1';
+      mockReq.params = { id: '1' };
       const mockProductData = { name: 'Updated Product' };
-      const mockUpdatedProduct = { id: '1', ...mockProductData };
+      const mockUpdatedProduct = { id: '1', name: 'Updated Product', description: 'Description', price: 100, stock: 10, category: 'Category' };
       mockReq.body = mockProductData;
       vi.mocked(productService.updateProduct).mockResolvedValue(mockUpdatedProduct);
 
@@ -116,7 +116,7 @@ describe('ProductController', () => {
     });
 
     it('should return 404 when product not found', async () => {
-      mockReq.params.id = '999';
+      mockReq.params = { id: '999' };
       mockReq.body = { name: 'Updated Product' };
       vi.mocked(productService.updateProduct).mockResolvedValue(null);
 
@@ -127,7 +127,7 @@ describe('ProductController', () => {
     });
 
     it('should call next with error on failure', async () => {
-      mockReq.params.id = '1';
+      mockReq.params = { id: '1' };
       const mockError = new Error('Service error');
       mockReq.body = { name: 'Updated Product' };
       vi.mocked(productService.updateProduct).mockRejectedValue(mockError);
@@ -140,7 +140,7 @@ describe('ProductController', () => {
 
   describe('deleteProduct', () => {
     it('should delete product when id exists', async () => {
-      mockReq.params.id = '1';
+      mockReq.params = { id: '1' };
       vi.mocked(productService.deleteProduct).mockResolvedValue(true);
 
       await deleteProduct(mockReq as Request, mockRes as Response, mockNext);
@@ -150,7 +150,7 @@ describe('ProductController', () => {
     });
 
     it('should return 404 when product not found', async () => {
-      mockReq.params.id = '999';
+      mockReq.params = { id: '999' };
       vi.mocked(productService.deleteProduct).mockResolvedValue(false);
 
       await deleteProduct(mockReq as Request, mockRes as Response, mockNext);
@@ -160,7 +160,7 @@ describe('ProductController', () => {
     });
 
     it('should call next with error on failure', async () => {
-      mockReq.params.id = '1';
+      mockReq.params = { id: '1' };
       const mockError = new Error('Service error');
       vi.mocked(productService.deleteProduct).mockRejectedValue(mockError);
 

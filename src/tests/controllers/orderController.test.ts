@@ -25,7 +25,14 @@ describe('OrderController', () => {
 
   describe('getAllOrders', () => {
     it('should return all orders', async () => {
-      const mockOrders = [{ id: '1', item: 'Product A' }];
+      const mockOrders = [{ 
+        id: '1', 
+        userId: '1', 
+        items: [{ productId: '1', quantity: 2, price: 100 }], 
+        total: 200, 
+        status: 'pending' as const,
+        createdAt: '2025-01-01T00:00:00.000Z'
+      }];
       vi.mocked(orderService.getAllOrders).mockResolvedValue(mockOrders);
 
       await getAllOrders(mockReq as Request, mockRes as Response, mockNext);
@@ -46,8 +53,15 @@ describe('OrderController', () => {
 
   describe('getOrderById', () => {
     it('should return order when id exists', async () => {
-      mockReq.params.id = '1';
-      const mockOrder = { id: '1', item: 'Product A' };
+      mockReq.params = { id: '1' };
+      const mockOrder = { 
+        id: '1', 
+        userId: '1', 
+        items: [{ productId: '1', quantity: 2, price: 100 }], 
+        total: 200, 
+        status: 'pending' as const,
+        createdAt: '2025-01-01T00:00:00.000Z'
+      };
       vi.mocked(orderService.getOrderById).mockResolvedValue(mockOrder);
 
       await getOrderById(mockReq as Request, mockRes as Response, mockNext);
@@ -57,8 +71,8 @@ describe('OrderController', () => {
     });
 
     it('should return 404 when order not found', async () => {
-      mockReq.params.id = '999';
-      vi.mocked(orderService.getOrderById).mockResolvedValue(null);
+      mockReq.params = { id: '999' };
+      vi.mocked(orderService.getOrderById).mockResolvedValue(undefined);
 
       await getOrderById(mockReq as Request, mockRes as Response, mockNext);
 
@@ -67,7 +81,7 @@ describe('OrderController', () => {
     });
 
     it('should call next with an error when service throws', async () => {
-      mockReq.params.id = '1';
+      mockReq.params = { id: '1' };
       const mockError = new Error('Service error');
       vi.mocked(orderService.getOrderById).mockRejectedValue(mockError);
 
@@ -79,8 +93,17 @@ describe('OrderController', () => {
 
   describe('createOrder', () => {
     it('should create a new order', async () => {
-      const mockOrderData = { item: 'Product A' };
-      const mockNewOrder = { id: '1', ...mockOrderData };
+      const mockOrderData = { 
+        userId: '1', 
+        items: [{ productId: '1', quantity: 2, price: 100 }], 
+        total: 200, 
+        status: 'pending' as const
+      };
+      const mockNewOrder = { 
+        id: '1', 
+        ...mockOrderData, 
+        createdAt: '2025-01-01T00:00:00.000Z'
+      };
       mockReq.body = mockOrderData;
       vi.mocked(orderService.createOrder).mockResolvedValue(mockNewOrder);
 
@@ -92,7 +115,12 @@ describe('OrderController', () => {
 
     it('should call next with an error when service throws', async () => {
       const mockError = new Error('Service error');
-      mockReq.body = { item: 'Product A' };
+      mockReq.body = { 
+        userId: '1', 
+        items: [{ productId: '1', quantity: 2, price: 100 }], 
+        total: 200, 
+        status: 'pending' as const
+      };
       vi.mocked(orderService.createOrder).mockRejectedValue(mockError);
 
       await createOrder(mockReq as Request, mockRes as Response, mockNext);
@@ -103,9 +131,16 @@ describe('OrderController', () => {
 
   describe('updateOrder', () => {
     it('should update an existing order', async () => {
-      mockReq.params.id = '1';
-      const mockOrderData = { item: 'Updated Product A' };
-      const mockUpdatedOrder = { id: '1', ...mockOrderData };
+      mockReq.params = { id: '1' };
+      const mockOrderData = { status: 'completed' as const };
+      const mockUpdatedOrder = { 
+        id: '1', 
+        userId: '1', 
+        items: [{ productId: '1', quantity: 2, price: 100 }], 
+        total: 200, 
+        status: 'completed' as const,
+        createdAt: '2025-01-01T00:00:00.000Z'
+      };
       mockReq.body = mockOrderData;
       vi.mocked(orderService.updateOrder).mockResolvedValue(mockUpdatedOrder);
 
@@ -116,8 +151,8 @@ describe('OrderController', () => {
     });
 
     it('should return 404 when order not found', async () => {
-      mockReq.params.id = '999';
-      mockReq.body = { item: 'Updated Product A' };
+      mockReq.params = { id: '999' };
+      mockReq.body = { status: 'completed' as const };
       vi.mocked(orderService.updateOrder).mockResolvedValue(null);
 
       await updateOrder(mockReq as Request, mockRes as Response, mockNext);
@@ -127,9 +162,9 @@ describe('OrderController', () => {
     });
 
     it('should call next with an error when service throws', async () => {
-      mockReq.params.id = '1';
+      mockReq.params = { id: '1' };
       const mockError = new Error('Service error');
-      mockReq.body = { item: 'Updated Product A' };
+      mockReq.body = { status: 'completed' as const };
       vi.mocked(orderService.updateOrder).mockRejectedValue(mockError);
 
       await updateOrder(mockReq as Request, mockRes as Response, mockNext);
@@ -140,7 +175,7 @@ describe('OrderController', () => {
 
   describe('deleteOrder', () => {
     it('should delete an existing order', async () => {
-      mockReq.params.id = '1';
+      mockReq.params = { id: '1' };
       vi.mocked(orderService.deleteOrder).mockResolvedValue(true);
 
       await deleteOrder(mockReq as Request, mockRes as Response, mockNext);
@@ -150,7 +185,7 @@ describe('OrderController', () => {
     });
 
     it('should return 404 when order not found', async () => {
-      mockReq.params.id = '999';
+      mockReq.params = { id: '999' };
       vi.mocked(orderService.deleteOrder).mockResolvedValue(false);
 
       await deleteOrder(mockReq as Request, mockRes as Response, mockNext);
@@ -160,7 +195,7 @@ describe('OrderController', () => {
     });
 
     it('should call next with an error when service throws', async () => {
-      mockReq.params.id = '1';
+      mockReq.params = { id: '1' };
       const mockError = new Error('Service error');
       vi.mocked(orderService.deleteOrder).mockRejectedValue(mockError);
 
